@@ -28,19 +28,23 @@ listener_thread = threading.Thread(target=start_hotkey_listener, daemon=True)
 listener_thread.start()
 
 def library():
-    thelist = str(("Enter text instantly.", "Image autoclicker"))
-    print("Please choose what you want to do:" + thelist)
     dispatcher = {
-        'Enter text instantly': image_click_enter, 'Image autoclicker': image_click_amount
+        'Enter text instantly.': image_click_enter, 'Image autoclicker.': image_click_amount
     }
-    action = input('Choose: ')
-    dispatcher[action]()
+    dispatcher[pyautogui.confirm(text="Please choose what you want to do:", buttons=['Enter text instantly.', 'Image autoclicker.'])]()
 
 def image_click_enter(retry_counter = 0):
-    print('Please input your exactly image location after this prompt.')
-    put=input()
-    print('Now please enter what you want to say.')
-    tup = input()
+    while True:
+        put=pyautogui.prompt(text='Please input your exact image location.',
+        title='Enter text instantly.', default='Example:/home/jack/Documents/screenshot.png')
+        if put is None:
+            os._exit(0)
+        tup = pyautogui.prompt(text='Please enter what you want to say. (Notice; After entering the text this prompt will close, however the program will still run.)',
+        title='Enter text instantly.', default='Hi mom!')
+        if tup is None:
+            continue
+        else:
+            break
     while retry_counter < 5:
         try:
             alocation = (pyautogui.locateOnScreen(put, confidence=0.8))
@@ -58,8 +62,12 @@ def image_click_enter(retry_counter = 0):
             print('Unsuccessful trying again.')
 
 def image_click_amount(retry_counter2 = 0):
-    print("Please input the image of what you want your mouse to auto-click.")
-    enter = input()
+    enter = pyautogui.prompt(text="Please input the image of what you want your mouse to auto-click.",
+     title='Image autoclicker', default='Example:/home/jack/Documents/screenshot.png')
+    if enter is None:
+        os._exit(0)
+    pyautogui.alert(text='After clicking "OK" the autoclicker will begin, to stop it please click "ctrl+alt" at the same time.',
+     title='Image autoclicker', button='OK')
     while retry_counter2 < 5:
         try:
             blocation = (pyautogui.locateOnScreen(enter, confidence=0.8))
@@ -76,12 +84,13 @@ def image_click_amount(retry_counter2 = 0):
             print('Unsuccessful trying again.')
 
 def select_menu():
-    chooseplz = str(input("Would you like to use this program? (Y/N) "))
-    ylist = ("Y", "y","yes", "Yes")
+    ylist = ('Yes')
+    nlist = ('No')
+    chooseplz = pyautogui.confirm(text="Would you like to use this program?", buttons=[ylist, nlist])
     if chooseplz in ylist:
         return library()
     else:
-        print("Ok bye")
+        pyautogui.alert(text="Ok bye", button='byebye')
         os._exit(0)
 
 select_menu()
